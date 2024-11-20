@@ -1,0 +1,6 @@
+model_list:
+  - model_name: glm-4-9b
+    litellm_params:
+      model: openai//data/mtt/model_convert/glm-4-9b-chat-fp16-tp1-convert # add hosted_vllm/ prefix to route as OpenAI provider
+      api_base: http://localhost:8000/v1/ # add api base for OpenAI compatible provider
+      api_key: openai

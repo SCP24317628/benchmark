@@ -1,0 +1,3 @@
+[submodule "inference/serving/llm/llmperf"]
+	path = inference/serving/llm/llmperf
+	url = https://github.com/donggongqing/llmperf.git
