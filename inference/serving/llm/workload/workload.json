@@ -1,0 +1,18 @@
+{
+    "glm-4-9b_1024_dec64": {
+        "model": "glm-4-9b",
+        "task": "workload/task_1024_dec64_req16_con4_tp1_pp1.sh"
+    },
+    "glm-4-9b_1024_dec128": {
+        "model": "glm-4-9b",
+        "task": "workload/task_1024_dec128_req100_con10_tp1_pp1.sh"
+    },
+    "glm-4-9b_2048_dec64": {
+        "model": "glm-4-9b",
+        "task": "workload/task_2048_dec64_req16_con4_tp1_pp1.sh"
+    },
+    "glm-4-9b_2048_dec128": {
+        "model": "glm-4-9b",
+        "task": "workload/task_2048_dec128_req100_con10_tp1_pp1.sh"
+    }
+}

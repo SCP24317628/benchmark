@@ -1,1 +1,4 @@
-./result_output/*
+**/result_outputs/*
+**/result_outputs
+**/test/*
+**/test
