@@ -4,3 +4,38 @@ model_list:
       model: openai//data/mtt/model_convert/glm-4-9b-chat-fp16-tp1-convert # add hosted_vllm/ prefix to route as OpenAI provider
       api_base: http://localhost:8000/v1/ # add api base for OpenAI compatible provider
       api_key: openai
+  - model_name: chatglm3-6b
+    litellm_params:
+      model: openai//data/mtt/model_convert/chatglm3-fp16-tp1-convert
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai
+  - model_name: qwen2-7b
+    litellm_params:
+      model: openai//data/mtt/model_convert/Qwen2-7B-Instruct-fp16-tp1-convert
+      api_base: http://localhost:8000/v1/
+      api_key: openai
+  - model_name: qwen2-72b
+    litellm_params:
+      model: openai//data/mtt/model_convert/Qwen2-72B-Instruct-fp16-tp8-convert 
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai
+  - model_name: llama2-7b
+    litellm_params:
+      model: openai//data/mtt/model_convert/llama-2-7b-hf-fp16-tp1-convert 
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai
+  - model_name: llama2-13b
+    litellm_params:
+      model: openai//data/mtt/model_convert/llama-2-13b-chat-hf-fp16-convert-tp1 
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai
+  - model_name: llama2-70b
+    litellm_params:
+      model: openai//data/mtt/model_convert/llama-2-70b-chat-hf-fp16-convert-tp8
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai
+  - model_name: llama3-8b
+    litellm_params:
+      model: openai//data/mtt/model_convert/Meta-Llama-3-8B-tp1-convert
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai

@@ -1,6 +1,6 @@
 import argparse
 from benchmark_utils import LiteLLMService, VLLMService
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, Optional, Tuple, List, Any
 from pathlib import Path
 import os
 import time
@@ -14,12 +14,19 @@ import json
 
 # Global script mappings
 VLLM_SCRIPTS = {
-    'chatglm3-6b': 'vllm_chatglm3_6b.sh',
-    'glm-4-9b': 'vllm_glm4_9b.sh',
-    'qwen2-72b': 'vllm_qwen2_72b.sh',
-    'qwen2-7b': 'vllm_qwen2_7b.sh',
-    'openai': 'run_vllm_openai.sh'
+    'chatglm3-6b'   : 'vllm_chatglm3_6b.sh',
+    'llama2-7b'     : 'vllm_llama2_7b.sh',
+    'llama2-13b'    : 'vllm_llama2_13b.sh',
+    'llama2-70b'    : 'vllm_llama2_13b.sh',
+    'llama3-8b'     : 'vllm_llama3_8b.sh',
+    'glm-4-9b'      : 'vllm_glm4_9b.sh',
+    'qwen2-72b'     : 'vllm_qwen2_72b.sh',
+    'qwen2-7b'      : 'vllm_qwen2_7b.sh',
+    'openai'        : 'run_vllm_openai.sh'
 }
+PINK = '\033[95m'
+RED = '\033[91m'
+RESET = '\033[0m'
 
 # Get the absolute path to the script directory
 CURRENT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -80,12 +87,32 @@ def cleanup_processes(processes):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True, help="Config file name located in the musa directory")
-    parser.add_argument('--model', 
-        type=str, 
-        required=True, 
-        choices=list(VLLM_SCRIPTS.keys()))
+    parser.add_argument('--model', type=str, required=True, choices=list(VLLM_SCRIPTS.keys()))
     parser.add_argument('--device', type=str, required=True, choices=['cpu', 'cuda', 'musa'])
+    parser.add_argument('--input', type=str, required=True, help="Comma-separated list of input token lengths")
+    parser.add_argument('--output', type=str, required=True, help="Comma-separated list of output token lengths")
+    parser.add_argument('--concurrent', type=str, required=True, help="Comma-separated list of concurrent request numbers")
     return parser.parse_args()
+
+def parse_list_arg(arg_str: str) -> List[int]:
+    """Parse comma-separated string into list of integers"""
+    return [int(x.strip()) for x in arg_str.split(',')]
+
+def generate_workload_combinations(model: str, input_tokens: List[int], output_tokens: List[int], concurrent: List[int]) -> Dict[str, Dict[str, str]]:
+    """Generate all possible combinations of parameters for workload"""
+    workload = {}
+    for inp in input_tokens:
+        for out in output_tokens:
+            for conc in concurrent:
+                task_id = f"{model}_inp{inp}_out{out}_conc{conc}"
+                workload[task_id] = {
+                    "model": model,
+                    "input_tokens": inp,
+                    "output_tokens": out,
+                    "concurrent": conc,
+                    "task": "workload/task.sh"
+                }
+    return workload
 
 def deploy_services(config_name: str, model: str, device: str, scripts: Dict[str, str]) -> Tuple[Optional[LiteLLMService], Optional[VLLMService]]:
     """
@@ -120,9 +147,9 @@ def deploy_services(config_name: str, model: str, device: str, scripts: Dict[str
 
     return litellm_service, vllm_service
 
-def run_perf_script(model: str, script: str, save_dir: str) -> Optional[subprocess.Popen]:
+def run_perf_script(model: str, script: str, save_dir: str, input_tokens: int, output_tokens: int, concurrent: int) -> Optional[subprocess.Popen]:
     """Run performance script as a background process"""
-    command = f"bash {script} {model} {save_dir}"
+    command = f"bash {script} {model} {save_dir} {input_tokens} {output_tokens} {concurrent}"
     try:
         process = subprocess.Popen(
             command,
@@ -133,36 +160,50 @@ def run_perf_script(model: str, script: str, save_dir: str) -> Optional[subproce
             bufsize=1,
             universal_newlines=True
         )
-        print(f"Started benchmark process for {model} with PID: {process.pid}")
+        print(f"{PINK}Started benchmark process for {model} with PID: {process.pid}{RESET}")
         return process
     except subprocess.SubprocessError as e:
         print(f"Failed to start benchmark process: {e}")
         return None
 
-def load_workload(workload_pth: str = "workload/workload.json") -> Dict[str, Dict[str, str]]:
-    """Load workload configuration from JSON file"""
-    try:
-        workload_pth = Path(CURRENT_DIR) / workload_pth
-        with open(workload_pth, 'r') as f:
-            workload = json.load(f)
-        print(f"Loaded workload configuration from {workload_pth}")
-        return workload
-    except Exception as e:
-        print(f"Error loading workload configuration: {e}")
-        return {}
-
-def run_benchmark(workload: Dict[str, Dict[str, str]]) -> List[subprocess.Popen]:
+def run_benchmark(workload: Dict[str, Dict[str, Any]]) -> List[subprocess.Popen]:
     """Run benchmarks as background processes and return list of processes"""
     processes = []
     for task_id, task_info in workload.items():
         time_stamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         pth = f"{task_info['model']}_result/{task_id}_{time_stamp}"
         print(f"Running benchmark for {task_info['model']} - {task_id}...")
-        process = run_perf_script(task_info['model'], task_info['task'], pth)
+        process = run_perf_script(
+            task_info['model'],
+            task_info['task'],
+            pth,
+            task_info['input_tokens'],
+            task_info['output_tokens'],
+            task_info['concurrent']
+        )
         if process:
+            print(f"{PINK}Waiting for benchmark {task_id} to complete...{RESET}")
+            process.wait()
+
+            # Capture output
+            stdout, stderr = process.communicate()
+            time.sleep(15)
+            
+            # Check if the process completed successfully
+            if process.returncode == 0:
+                print(f"Benchmark {task_id} completed successfully")
+            else:
+                print(f"Benchmark {task_id} failed with return code {process.returncode}")
+                print("\nProcess stdout:")
+                print(stdout)
+                print(f"{RED}\nProcess stderr:{RESET}")
+                print(stderr)
+            
             processes.append(process)
-        time.sleep(1)  # Small delay between launches
+
+        time.sleep(10)  # Small delay between launches
     return processes
+
 
 def main():
     args = parse_args()
@@ -191,15 +232,28 @@ def main():
             print("Failed to deploy services")
             return
             
-        print("Waiting for 45 seconds...and running benchmark")
-        time.sleep(45)
         
-        # Load workload configuration from JSON
-        workload = load_workload()
-        if not workload:
-            print("No workload configuration found. Exiting...")
-            return
-            
+        # Parse list arguments
+        input_tokens = parse_list_arg(args.input)
+        output_tokens = parse_list_arg(args.output)
+        concurrent_requests = parse_list_arg(args.concurrent)
+        
+        # Generate workload combinations
+        workload = generate_workload_combinations(
+            args.model,
+            input_tokens,
+            output_tokens,
+            concurrent_requests
+        )
+
+        # Print workload configuration in pink
+        print(f"\n{PINK}Workload Configuration:")
+        print(json.dumps(workload, indent=2))
+        print(f"{RESET}")  # Reset color
+        
+        print("Waiting for 3 minutes to initilize model ... then start benchmark")
+        time.sleep(180)
+        
         benchmark_processes = run_benchmark(workload)
         print("Started benchmarks. Waiting for completion...")
         
