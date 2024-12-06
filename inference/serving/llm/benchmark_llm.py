@@ -86,7 +86,8 @@ def cleanup_processes(processes):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, required=True, help="Config file name located in the musa directory")
+    parser.add_argument('--config', type=str, required=True, 
+                       help="Config file name (e.g., musa/config.yaml) located in the same directory")
     parser.add_argument('--model', type=str, required=True, choices=list(VLLM_SCRIPTS.keys()))
     parser.add_argument('--device', type=str, required=True, choices=['cpu', 'cuda', 'musa'])
     parser.add_argument('--input', type=str, required=True, help="Comma-separated list of input token lengths")
@@ -120,8 +121,11 @@ def deploy_services(config_name: str, model: str, device: str, scripts: Dict[str
     Returns:
         tuple: (litellm_service, vllm_service) or (None, None) if either fails
     """
-    # Construct the full path to the config file
-    config_path = CONFIG_DIR / config_name
+    # Get the directory where the script is located
+    current_dir = Path(__file__).parent
+    
+    # Construct the full path to the config file relative to script location
+    config_path = current_dir / config_name
 
     # 1. Start LiteLLM first
     print("\nStarting LiteLLM service...")

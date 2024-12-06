@@ -15,8 +15,8 @@ python llmperf/token_benchmark_ray.py \
 --mean-input-tokens $INPUT_TOKENS \
 --stddev-input-tokens 16 \
 --mean-output-tokens $OUTPUT_TOKENS \
---stddev-output-tokens 8 \
---max-num-completed-requests 64 \
+--stddev-output-tokens 16 \
+--max-num-completed-requests 256 \
 --timeout 3600 \
 --num-concurrent-requests $CONCURRENT \
 --results-dir "result_outputs/$SAVE_DIR" \
