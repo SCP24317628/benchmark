@@ -7,5 +7,5 @@ python benchmark_llm.py \
     --device $DEVICE \
     --config musa/config.yaml \
     --input 64,128,256,512 \
-    --output 32,64,128 \
-    --concurrent 1,4,16,32
+    --output 64,128,192,256 \
+    --concurrent 1,4,16,32,64,128,256
