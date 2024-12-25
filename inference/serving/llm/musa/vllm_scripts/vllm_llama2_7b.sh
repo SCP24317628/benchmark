@@ -5,7 +5,7 @@ python -O -u -m vllm.entrypoints.openai.api_server \
     --host=127.0.0.1 \
     --port=8000 \
     --model=/data/mtt/model_convert/llama-2-7b-hf-fp16-tp1-convert \
-    --max-model-len=4096 \
+    --max-model-len=2048 \
     --tokenizer=hf-internal-testing/llama-tokenizer \
     --api-key=openai \
     --trust-remote-code \

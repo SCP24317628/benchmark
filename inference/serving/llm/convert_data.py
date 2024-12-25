@@ -16,26 +16,33 @@ class DataConverter:
         backend: str,
         backend_version: str,
         engine: str,
+        engine_version: str,
         serving: str,
+        serving_version: str,
         gpu: str,
+        model_alias: Optional[str] = None,
         base_dir: str = "result_outputs"
     ):
         self.model = model
+        self.model_alias = model_alias or model  # Use alias if provided, otherwise use original model name
         self.extra_info = {
+            "model": self.model_alias,  # Use the alias in extra info
             "dataType": data_type,
             "driver": driver,
             "driverVersion": driver_version,
             "backend": backend,
             "backendVersion": backend_version,
             "engine": engine,
+            "engineVersion": engine_version,
             "serving": serving,
+            "servingVersion": serving_version,
             "gpu": gpu
         }
         # Get the directory where convert_data.py is located
         current_dir = Path(__file__).parent
         # Set paths relative to the script location
         self.base_dir = current_dir / base_dir
-        # Create output directory in convert_data folder
+        # Create output directory in convert_data folder using original model name for path
         self.output_dir = current_dir / "convert_data" / f"{model}_data"
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -62,12 +69,10 @@ class DataConverter:
             # Convert to DataFrame and add extra columns
             df = pd.DataFrame([data])
             
-            # Calculate total throughput
-            if 'results_request_output_throughput_token_per_s_mean' in df.columns and 'num_concurrent_requests' in df.columns:
-                df['total_request_output_throughput_token_per_s'] = (
-                    df['results_request_output_throughput_token_per_s_mean'] * df['num_concurrent_requests']
-                )
-            
+            # Replace model name with alias if it exists in the data
+            if 'model' in df.columns:
+                df['model'] = self.model_alias
+
             # Add extra info columns
             for key, value in self.extra_info.items():
                 df[key] = value
@@ -140,13 +145,16 @@ class DataConverter:
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert benchmark results to CSV format')
     parser.add_argument('--model', type=str, required=True, help='Model name to process')
+    parser.add_argument('--model-alias', type=str, help='Alias name for the model (optional)')
     parser.add_argument('--data-type', type=str, required=True, help='Data type')
     parser.add_argument('--driver', type=str, required=True, help='Driver name')
     parser.add_argument('--driver-version', type=str, required=True, help='Driver version')
     parser.add_argument('--backend', type=str, required=True, help='Backend name, e.g. musa, cuda')
     parser.add_argument('--backend-version', type=str, required=True, help='Backend version')
     parser.add_argument('--engine', type=str, required=True, help='Engine name, e.g. mtt, trt-llm')
+    parser.add_argument('--engine-version', type=str, required=True, help='Engine version')
     parser.add_argument('--serving', type=str, required=True, help='Serving name, e.g. vllm, triton')
+    parser.add_argument('--serving-version', type=str, required=True, help='Serving version')
     parser.add_argument('--gpu', type=str, required=True, help='GPU model, e.g. S4000, A100')
     parser.add_argument('--base-dir', type=str, default='result_outputs', 
                        help='Base directory containing result outputs')
@@ -163,8 +171,11 @@ def main():
         backend=args.backend,
         backend_version=args.backend_version,
         engine=args.engine,
+        engine_version=args.engine_version,
         serving=args.serving,
+        serving_version=args.serving_version,
         gpu=args.gpu,
+        model_alias=args.model_alias,  # Pass the model alias
         base_dir=args.base_dir
     )
     
