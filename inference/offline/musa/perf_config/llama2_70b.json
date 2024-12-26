@@ -1,0 +1,23 @@
+[
+  {
+    "model_name": "llama-2-70b-chat-hf-fp16",
+    "path": "/data/mtt/model_convert/llama-2-70b-chat-hf-fp16-convert-tp8",
+    "batchs": [1,2,4,8,16],
+    "prefill_token_lens": [256,512,1024,2048,4096,8192],
+    "decode_token_lens": [64,128]
+  },
+  {
+    "model_name": "llama-2-70b-chat-hf-fp16-bs42",
+    "path": "/data/mtt/model_convert/llama-2-70b-chat-hf-fp16-convert-tp8",
+    "batchs": [32],
+    "prefill_token_lens": [256,512,1024,2048,4096],
+    "decode_token_lens": [64,128]
+  },
+  {
+    "model_name": "llama-2-70b-chat-hf-fp16-bs42",
+    "path": "/data/mtt/model_convert/llama-2-70b-chat-hf-fp16-convert-tp8",
+    "batchs": [32],
+    "prefill_token_lens": [8192],
+    "decode_token_lens": [64,128]
+  }
+]

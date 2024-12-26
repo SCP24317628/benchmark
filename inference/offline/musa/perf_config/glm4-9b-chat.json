@@ -1,0 +1,23 @@
+[
+  {
+    "model_name": "glm-4-9b-chat",
+    "path": "/data/mtt/model_convert/glm-4-9b-chat-fp16-tp1-convert",
+    "batchs": [1,2,4,8],
+    "prefill_token_lens": [256,512,1024,2048,4096,8192],
+    "decode_token_lens": [64,128]
+  },
+  {
+    "model_name": "glm-4-9b-chat",
+    "path": "/data/mtt/model_convert/glm-4-9b-chat-fp16-tp1-convert",
+    "batchs": [10],
+    "prefill_token_lens": [256,512,1024,2048,4096],
+    "decode_token_lens": [64,128]
+  },
+  {
+    "model_name": "glm-4-9b-chat",
+    "path": "/data/mtt/model_convert/glm-4-9b-chat-fp16-tp1-convert",
+    "batchs": [10],
+    "prefill_token_lens": [8192],
+    "decode_token_lens": [64,128]
+  }
+]

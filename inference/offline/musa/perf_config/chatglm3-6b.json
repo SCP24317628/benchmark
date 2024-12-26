@@ -1,0 +1,9 @@
+[
+  {
+    "model_name": "chatglm3-6b",
+    "path": "/data/mtt/model_convert/chatglm3-6b-fp16-tp1-convert",
+    "batchs": [1,2,4,8,16],
+    "prefill_token_lens": [256,512,1024,2048,4096,8192],
+    "decode_token_lens": [64]
+  }
+]

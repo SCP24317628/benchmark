@@ -1,0 +1,9 @@
+[
+  {
+    "model_name": "llama2-7b",
+    "path": "/data/mtt/model_convert/llama-2-7b-hf-fp16-tp1-convert",
+    "batchs": [1,2,4,8],
+    "prefill_token_lens": [256,512],
+    "decode_token_lens": [64]
+  }
+]
