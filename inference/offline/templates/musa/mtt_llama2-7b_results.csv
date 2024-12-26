@@ -1,0 +1,9 @@
+Model,Data_Type,GPU_Num,num_heads,num_kv_heads,num_layers,tensor_para_size,pipeline_para_size,vocab_size,quantization,batch,prefill_tokens,decode_tokens,prefill_latency(ms),generated_tokens,generation_time(ms),latency(ms),tokens_per_second,single_batch_decode_tps,total_decode_tps
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,1,256,64,44.34,63,1432.3,1476.64,42.66,43.99,43.99
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,1,512,64,85.79,63,1447.94,1533.73,41.08,43.51,43.51
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,2,256,64,86.36,126,1454.44,1540.8,81.78,43.32,86.63
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,2,512,64,170.46,126,1477.09,1647.55,76.48,42.65,85.3
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,4,256,64,169.93,252,1529.04,1698.98,148.32,41.2,164.81
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,4,512,64,337.68,252,1549.06,1886.73,133.56,40.67,162.68
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,8,256,64,334.08,504,1584.81,1918.89,262.65,39.75,318.02
+llama2-7b,FP16,1,32,32,32,1,1,32000,QuantMode.0,8,512,64,672.65,504,1693.28,2365.93,213.02,37.21,297.65

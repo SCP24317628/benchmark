@@ -1,0 +1,7 @@
+engine_dir,world_size,num_heads,num_kv_heads,num_layers,hidden_size,vocab_size,precision,batch_size,gpu_weights_percent,input_length,output_length,gpu_peak_mem(gb),build_time(s),tokens_per_sec,percentile95(ms),percentile99(ms),latency(ms),compute_cap,quantization,generation_time(ms),total_generated_tokens,generation_tokens_per_second,prefill_latency(ms)
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,1,1,128,64,53.51,None,88.47,725.885,727.645,723.411,sm80,QuantMode.0,705.156,63,89.342,18.255
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,4,1,128,64,53.674,None,323.9,792.184,793.12,790.371,sm80,QuantMode.0,751.716,252,335.233,38.655
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,8,1,128,64,53.862,None,604.55,847.643,850.347,846.907,sm80,QuantMode.0,774.895,504,650.411,72.012
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,16,1,128,64,54.237,None,1082.7,946.59,949.883,945.787,sm80,QuantMode.0,808.608,1008,1246.587,137.179
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,32,1,128,64,54.987,None,1735.09,1181.409,1183.35,1180.344,sm80,QuantMode.0,912.377,2016,2209.612,267.967
+Llama-3.1-8b,1,32,8,32,4096,128256,bfloat16,64,1,128,64,57.213,None,2528.84,1622.19,1624.113,1619.713,sm80,QuantMode.0,1081.529,4032,3728.055,538.184
