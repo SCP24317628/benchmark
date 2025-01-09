@@ -15,6 +15,9 @@ PRECISION_MAP = {
     "float64": "FP64",
     "fp8": "FP8",
     "fp4": "FP4",
+    "fp16": "FP16",
+    "bf16": "BF16",
+    "fp32": "FP32"
 }
 
 def get_default_output_path(model_name: str, gpu_name: str, device: str) -> str:
