@@ -8,3 +8,8 @@
 **/offline/results
 **/perf_data/*
 **/perf_data
+
+**/compute/gemm/output/*
+**/compute/gemm/output
+**/compute/gemm/template/*
+**/compute/gemm/template
