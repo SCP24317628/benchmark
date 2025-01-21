@@ -2,6 +2,7 @@
 MODEL_NAME="$1"
 DEVICE="$2"
 
+
 python benchmark_llm.py \
     --model $MODEL_NAME \
     --device $DEVICE \

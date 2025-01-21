@@ -4,12 +4,28 @@ import argparse
 from datetime import datetime
 import os
 
-def convert_csv_to_json(gpu_name, input_file, theory_tflops, output_file=None):
+# Precision mapping
+PRECISION_MAP = {
+    "float16": "FP16",
+    "bfloat16": "BF16",
+    "int8": "INT8",
+    "int4": "INT4",
+    "float32": "FP32",
+    "float64": "FP64",
+    "fp8": "FP8",
+    "fp4": "FP4",
+    "fp16": "FP16",
+    "bf16": "BF16",
+    "fp32": "FP32"
+}
+
+def convert_csv_to_json(gpu_name, brand, input_file, theory_tflops, output_file=None):
     """
     Convert CSV data to JSON format with specific requirements
     
     Args:
         gpu_name (str): Name of the GPU to replace existing gpu_name values
+        brand (str): Brand name of the GPU
         input_file (str): Path to input CSV file
         theory_tflops (float): Theoretical TFLOPS of the GPU
         output_file (str, optional): Path to output JSON file. If None, generates default name
@@ -20,6 +36,12 @@ def convert_csv_to_json(gpu_name, input_file, theory_tflops, output_file=None):
         
         # Replace gpu_name with the provided value
         df['gpu_name'] = gpu_name
+        
+        # Add brand information
+        df['brand'] = brand
+        
+        # Map dtype to standardized precision format
+        df['dtype'] = df['dtype'].map(lambda x: PRECISION_MAP.get(x.lower(), x))
         
         # Add new calculated fields with rounding
         df['tflops'] = (df['gops'] / 1000).round(3)
@@ -56,6 +78,7 @@ def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description='Convert CSV data to JSON format')
     parser.add_argument('--gpu_name', '-g', required=True, help='Name of the GPU to replace existing gpu_name values')
+    parser.add_argument('--brand', '-b', required=True, help='Brand name of the GPU')
     parser.add_argument('--input_file', '-i', required=True, help='Path to input CSV file')
     parser.add_argument('--theory_tflops', '-t', required=True, type=float, help='Theoretical TFLOPS of the GPU')
     parser.add_argument('--output_file', '-o', help='Path to output JSON file (optional)')
@@ -63,7 +86,7 @@ def main():
     args = parser.parse_args()
     
     # Call conversion function
-    convert_csv_to_json(args.gpu_name, args.input_file, args.theory_tflops, args.output_file)
+    convert_csv_to_json(args.gpu_name, args.brand, args.input_file, args.theory_tflops, args.output_file)
 
 if __name__ == "__main__":
     main()
