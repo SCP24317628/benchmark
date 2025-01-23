@@ -13,3 +13,7 @@
 **/compute/gemm/output
 **/compute/gemm/template/*
 **/compute/gemm/template
+
+**/training/llm/results/*
+**/training/llm/results
+
