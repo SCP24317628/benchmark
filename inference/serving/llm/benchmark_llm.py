@@ -214,7 +214,7 @@ def main():
     killer = GracefulKiller()
     
     scripts = {
-        model: str(SCRIPT_DIR / script_name)
+        model: str(CURRENT_DIR / args.device / script_name)
         for model, script_name in VLLM_SCRIPTS.items()
     }
     
