@@ -67,7 +67,7 @@ def convert_xlsx_to_json(input_file: str, output_file: str):
                             'transistors', 'L1Cache', 'L2Cache', 'LLCache', 'memory',
                             'memoryBandwidth', 'memoryClock', 'memoryBusWidth', 'power',
                             'fp4', 'fp8', 'int4', 'int8', 'fp16', 'bf16', 'fp32', 'fp64',
-                            'pixelRate', 'textureRate', 'linkSpeed']
+                            'pixelRate', 'textureRate', 'linkSpeed', 'dieSize']
             
             for field in numeric_fields:
                 if field in row:
@@ -90,11 +90,6 @@ def convert_xlsx_to_json(input_file: str, output_file: str):
             for field in string_fields:
                 if field in row:
                     record[field] = clean_value(row[field])
-            
-            # Special handling for dieSize to ensure it's a string
-            if 'dieSize' in row:
-                value = clean_value(row['dieSize'])
-                record['dieSize'] = str(value) if value is not None else None
             
             records.append(record)
         

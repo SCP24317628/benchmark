@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Default values
-INPUT_FILE="template/zhijiang_training_0121.csv"
-DEVICE="nv"
-DRIVER="nvidia_linux"
-BACKEND="cuda"
+INPUT_FILE="template/zhijiang_train_s5000.csv"
+DEVICE="mt"
+DRIVER="kuae"
+BACKEND="musa"
 DRIVER_VERSION="unkonwn"
 BACKEND_VERSION="unkonwn"
 OUTPUT_FILE="results/convert_$(date +%Y%m%d_%H%M%S).json"
@@ -31,7 +31,7 @@ done
 mkdir -p "$(dirname "${OUTPUT_FILE}")"
 
 # Run the conversion script with default values
-python3 convert_data.py \
+python convert_data.py \
     --input_file "${INPUT_FILE}" \
     --device "${DEVICE}" \
     --driver "${DRIVER}" \

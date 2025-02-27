@@ -17,3 +17,12 @@
 **/training/llm/results/*
 **/training/llm/results
 
+**/training/llm/template/*
+
+**/inference/serving/llm/results/*
+
+**/gpu/results/*
+**/gpu/results
+**/gpu/template/*
+
+
