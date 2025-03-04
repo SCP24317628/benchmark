@@ -17,12 +17,15 @@ VLLM_SCRIPTS = {
     'chatglm3-6b'   : 'vllm_chatglm3_6b.sh',
     'llama2-7b'     : 'vllm_llama2_7b.sh',
     'llama2-13b'    : 'vllm_llama2_13b.sh',
-    'llama2-70b'    : 'vllm_llama2_13b.sh',
+    'llama2-70b'    : 'vllm_llama2_70b.sh',
     'llama3-8b'     : 'vllm_llama3_8b.sh',
     'glm-4-9b'      : 'vllm_glm4_9b.sh',
     'qwen2-72b'     : 'vllm_qwen2_72b.sh',
+    'qwen2.5-72b-instruct': 'vllm_qwen2.5_72b.sh',
     'qwen2-7b'      : 'vllm_qwen2_7b.sh',
-    'openai'        : 'run_vllm_openai.sh'
+    'openai'        : 'run_vllm_openai.sh',
+    'meta-llama-3-70b': 'vllm_llama3_70b.sh',
+    'deepseek-r1'   : 'vllm_deepseek.sh'
 }
 PINK = '\033[95m'
 RED = '\033[91m'
@@ -30,8 +33,6 @@ RESET = '\033[0m'
 
 # Get the absolute path to the script directory
 CURRENT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-SCRIPT_DIR = CURRENT_DIR / "musa/vllm_scripts"
-CONFIG_DIR = CURRENT_DIR / "musa"
 
 class GracefulKiller:
     kill_now = False
@@ -93,6 +94,8 @@ def parse_args():
     parser.add_argument('--input', type=str, required=True, help="Comma-separated list of input token lengths")
     parser.add_argument('--output', type=str, required=True, help="Comma-separated list of output token lengths")
     parser.add_argument('--concurrent', type=str, required=True, help="Comma-separated list of concurrent request numbers")
+    parser.add_argument('--proxy', type=bool, required=True, help="If the vllm serving is running, start litellm proxy only")
+    parser.add_argument('--dry', type=bool, required=True, help="If the vllm and litellm are bothing running, run benchmark only")
     return parser.parse_args()
 
 def parse_list_arg(arg_str: str) -> List[int]:
@@ -114,6 +117,28 @@ def generate_workload_combinations(model: str, input_tokens: List[int], output_t
                     "task": "workload/task.sh"
                 }
     return workload
+
+def deploy_proxy(config_name: str, model: str, device: str, scripts: Dict[str, str]) -> Optional[LiteLLMService]:
+    """
+    Deploy litellm proxy only
+    Returns:
+        tuple: litellm_service or None if fails
+    """
+    # Get the directory where the script is located
+    current_dir = Path(__file__).parent
+    
+    # Construct the full path to the config file relative to script location
+    config_path = current_dir / config_name
+
+    print("\nStarting LiteLLM service...")
+    litellm_service = LiteLLMService(config_path=str(config_path))
+    if not litellm_service.start():
+        print("Failed to start LiteLLM service")
+        return None
+
+    # Wait a bit before starting VLLM
+    time.sleep(2)
+    return litellm_service
 
 def deploy_services(config_name: str, model: str, device: str, scripts: Dict[str, str]) -> Tuple[Optional[LiteLLMService], Optional[VLLMService]]:
     """
@@ -208,10 +233,17 @@ def run_benchmark(workload: Dict[str, Dict[str, Any]]) -> List[subprocess.Popen]
         time.sleep(10)  # Small delay between launches
     return processes
 
+# Define the signal handler function
+def signal_handler(sig, frame):
+    print("\nReceived interrupt signal. Starting cleanup...")
+    cleanup_processes(benchmark_processes)
+    print("Cleanup complete. Exiting...")
+    exit(0)
 
 def main():
     args = parse_args()
     killer = GracefulKiller()
+    global benchmark_processes
     
     scripts = {
         model: str(CURRENT_DIR / args.device / script_name)
@@ -224,19 +256,34 @@ def main():
     
     try:
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
-        
-        litellm_service, vllm_service = deploy_services(
-            config_name=args.config,
-            model=args.model,
-            device=args.device,
-            scripts=scripts
-        )
-        
-        if not litellm_service or not vllm_service:
-            print("Failed to deploy services")
-            return
+
+        dry_run = args.dry
+        proxy_only = args.proxy
+
+        if dry_run:
+            pass
+        elif proxy_only:
+            litellm_service = deploy_proxy(
+                config_name=args.config,
+                model=args.model,
+                device=args.device,
+                scripts=scripts
+            )
+            if not litellm_service:
+                print("Failed to start LiteLLM proxy")
+                return
+        else: 
+            litellm_service, vllm_service = deploy_services(
+                config_name=args.config,
+                model=args.model,
+                device=args.device,
+                scripts=scripts
+            )
             
-        
+            if not litellm_service or not vllm_service:
+                print("Failed to deploy services")
+                return
+              
         # Parse list arguments
         input_tokens = parse_list_arg(args.input)
         output_tokens = parse_list_arg(args.output)
@@ -255,12 +302,19 @@ def main():
         print(json.dumps(workload, indent=2))
         print(f"{RESET}")  # Reset color
         
-        print("Waiting for 3 minutes to initilize model ... then start benchmark")
-        time.sleep(180)
-        
+        if not dry_run:
+            print("Waiting for 3 minutes to initilize model ... then start benchmark")
+            time.sleep(180)
+        else: 
+            print("Waiting for 30 seconds to initilize model ... then start benchmark")
+            time.sleep(30)
+
         benchmark_processes = run_benchmark(workload)
         print("Started benchmarks. Waiting for completion...")
-        
+
+         # Register signal handler for SIGINT
+        signal.signal(signal.SIGINT, signal_handler)
+
         # Wait for benchmark processes or interruption
         while any(p.poll() is None for p in benchmark_processes):
             time.sleep(3)
@@ -277,20 +331,30 @@ def main():
         # First cleanup benchmark processes
         cleanup_processes(benchmark_processes)
         
-        # Then handle vLLM shutdown
-        if vllm_service:
-            # Create new event loop for async shutdown
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                loop.run_until_complete(shutdown_vllm(vllm_service))
-            finally:
-                loop.close()
-        
-        # Finally stop LiteLLM
-        if litellm_service:
-            print("Stopping LiteLLM service...")
-            litellm_service.terminate()
+        proxy_only = args.proxy
+        dry_run = args.dry
+        if dry_run:
+            pass
+        elif proxy_only:
+            # Keep vllm service running
+            if litellm_service:
+                print("Stopping LiteLLM service...")
+                litellm_service.terminate()
+        else:
+            # handle vLLM shutdown
+            if vllm_service:
+                # Create new event loop for async shutdown
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    loop.run_until_complete(shutdown_vllm(vllm_service))
+                finally:
+                    loop.close()
+            
+            # Finally stop LiteLLM
+            if litellm_service:
+                print("Stopping LiteLLM service...")
+                litellm_service.terminate()
         
         print("Shutdown sequence complete")
 

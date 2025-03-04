@@ -20,8 +20,14 @@ class DataConverter:
         serving: str,
         serving_version: str,
         gpu: str,
+        gpu_num: int = 1,
+        tp: int = 1,
+        pp: Optional[int] = None,
+        dp: Optional[int] = None,
+        ep: Optional[int] = None,
         model_alias: Optional[str] = None,
-        base_dir: str = "result_outputs"
+        base_dir: str = "result_outputs",
+        source: str = "in-house_benchmark",
     ):
         self.model = model
         self.model_alias = model_alias or model  # Use alias if provided, otherwise use original model name
@@ -36,7 +42,13 @@ class DataConverter:
             "engineVersion": engine_version,
             "serving": serving,
             "servingVersion": serving_version,
-            "gpu": gpu
+            "gpu": gpu,
+            "gpuNum": gpu_num,
+            "tp": tp,
+            "pp": pp,
+            "dp": dp,
+            "ep": ep,
+            "source": source,
         }
         # Get the directory where convert_data.py is located
         current_dir = Path(__file__).parent
@@ -156,8 +168,15 @@ def parse_args():
     parser.add_argument('--serving', type=str, required=True, help='Serving name, e.g. vllm, triton')
     parser.add_argument('--serving-version', type=str, required=True, help='Serving version')
     parser.add_argument('--gpu', type=str, required=True, help='GPU model, e.g. S4000, A100')
+    parser.add_argument('--gpu-num', type=int, required=True, help='Number of GPUs')
+    parser.add_argument('--tp', type=int, required=True, help='Tensor Parallelism')
+    parser.add_argument('--pp', type=int, help='Pipeline Parallelism')
+    parser.add_argument('--dp', type=int, help='Data Parallel')
+    parser.add_argument('--ep', type=int, help='Expert Parallel')
     parser.add_argument('--base-dir', type=str, default='result_outputs', 
                        help='Base directory containing result outputs')
+    parser.add_argument('--source', type=str, default='in-house_benchmark', 
+                       help='Data source')
     return parser.parse_args()
 
 def main():
@@ -175,8 +194,14 @@ def main():
         serving=args.serving,
         serving_version=args.serving_version,
         gpu=args.gpu,
+        gpu_num=args.gpu_num,
+        dp=args.dp,
+        tp=args.tp,
+        pp=args.pp,
+        ep=args.ep,
         model_alias=args.model_alias,  # Pass the model alias
-        base_dir=args.base_dir
+        base_dir=args.base_dir,
+        source=args.source,
     )
     
     converter.convert_all()

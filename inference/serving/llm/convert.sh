@@ -6,13 +6,16 @@ python convert_data.py \
     --model $MODEL_NAME \
     --model-alias $MODEL_ALIAS \
     --data-type fp16 \
-    --driver kuae \
-    --driver-version release-kuae-1.2.0 \
-    --backend musa \
-    --backend-version 2.1.0 \
-    --engine mtt \
-    --engine-version 0.14.0 \
+    --driver 'NVIDIA-Linux-x86_64' \
+    --driver-version '535.161.08' \
+    --backend cuda \
+    --backend-version 2.6.0 \
+    --engine cuda \
+    --engine-version 2.6.0 \
     --serving vllm \
-    --serving-version 0.4.2 \
-    --gpu 'MTT S4000' \
-    --base-dir result_outputs
+    --serving-version 0.7.3 \
+    --gpu 'A100' \
+    --gpu-num 8 \
+    --tp 8 \
+    --base-dir result_outputs \
+    --source 'in-house_benchmark'
