@@ -9,6 +9,6 @@ python benchmark_llm.py \
     --config $DEVICE/config.yaml \
     --proxy true \
     --dry true \
-    --input 128,256,512,1024,2048 \
-    --output 128,256,512,1024,2048 \
-    --concurrent 1,4,16,32,64,128
+    --input 128,256,512,1024 \
+    --output 128,256,512,1024 \
+    --concurrent 1,4,8,16,32,64,128

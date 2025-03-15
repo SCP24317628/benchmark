@@ -25,7 +25,13 @@ VLLM_SCRIPTS = {
     'qwen2-7b'      : 'vllm_qwen2_7b.sh',
     'openai'        : 'run_vllm_openai.sh',
     'meta-llama-3-70b': 'vllm_llama3_70b.sh',
-    'deepseek-r1'   : 'vllm_deepseek.sh'
+    'deepseek-r1'   : 'vllm_deepseek.sh',
+    'qwq-32b': 'vllm_qwq_32b.sh',
+    'deepseek-r1-llama-8b': 'vllm_deepseek_llama_8b.sh',
+    'deepseek-r1-llama-70b': 'vllm_deepseek_llama_70b.sh',
+    'deepseek-r1-distill-qwen-14b': 'vllm_deepseek_distill_qwen_14b.sh',
+    'deepseek-r1-distill-qwen-7b': 'vllm_deepseek_distill_qwen_7b.sh',
+    'deepseek-r1-distill-qwen-32b': 'vllm_deepseek_distill_qwen_32b.sh',
 }
 PINK = '\033[95m'
 RED = '\033[91m'
