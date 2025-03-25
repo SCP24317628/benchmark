@@ -72,7 +72,7 @@ def convert_trtllm_data(
                 'generation_time': float(row['generation_time(ms)']) if row.get('generation_time(ms)') else None,
                 'latency': float(row['latency(ms)']) if row.get('latency(ms)') else None,
                 'quantization': row.get('quantization'),
-                'total_tokens': int(row['total_generated_tokens']) if row.get('total_generated_tokens') else None,
+                'total_tokens': float(row['total_generated_tokens']) if row.get('total_generated_tokens') else None,
                 
                 # Additional fields from arguments
                 'modelName': model_name or row.get('engine_dir'),
