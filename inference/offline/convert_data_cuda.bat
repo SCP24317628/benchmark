@@ -3,13 +3,13 @@ setlocal EnableDelayedExpansion
 
 :: Default values for CUDA/TRT-LLM environment
 set "DEFAULT_DEVICE=cuda"
-set "DEFAULT_GPU_NAME=A100"
+set "DEFAULT_GPU_NAME=GeForce RTX 4090"
 set "DEFAULT_BACKEND=cuda"
 set "DEFAULT_BACKEND_VERSION=12.8"
 set "DEFAULT_ENGINE=trt-llm"
 set "DEFAULT_ENGINE_VERSION=0.17.0.post"
 set "DEFAULT_DRIVER=NVIDIA_Linux_x86_64"
-set "DEFAULT_DRIVER_VERSION=535.161.08"
+set "DEFAULT_DRIVER_VERSION=550.120"
 
 :: Initialize variables
 set "INPUT_FILE="
