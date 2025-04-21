@@ -3,13 +3,13 @@ setlocal EnableDelayedExpansion
 
 :: Default values for MUSA/MTT environment
 set "DEFAULT_DEVICE=musa"
-set "DEFAULT_GPU_NAME=MT-2000"
+set "DEFAULT_GPU_NAME=S4000_0x0327"
 set "DEFAULT_BACKEND=musa"
-set "DEFAULT_BACKEND_VERSION=2.7.0"
+set "DEFAULT_BACKEND_VERSION=rc3.1.0"
 set "DEFAULT_ENGINE=mtt"
-set "DEFAULT_ENGINE_VERSION=0.1.4"
-set "DEFAULT_DRIVER=kuae"
-set "DEFAULT_DRIVER_VERSION=1.2.0_release"
+set "DEFAULT_ENGINE_VERSION=0.2.1"
+set "DEFAULT_DRIVER=musa_driver"
+set "DEFAULT_DRIVER_VERSION=2.7.0"
 
 :: Initialize variables
 set "INPUT_FILE="
