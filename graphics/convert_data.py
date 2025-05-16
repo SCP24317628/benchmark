@@ -11,13 +11,23 @@ def parse_date(date_str: str) -> Optional[str]:
         return None
     try:
         # Try different date formats
-        for fmt in ['%Y-%m-%d', '%Y/%m/%d', '%d/%m/%Y', '%m/%d/%Y']:
+        for fmt in ['%Y-%m-%d', '%Y/%m/%d', '%d/%m/%Y', '%m/%d/%Y', '%Y%m%d']:
             try:
                 return datetime.strptime(str(date_str), fmt).isoformat()
             except ValueError:
                 continue
+
+        # Try year-month formats
+        for fmt in ['%Y%m', '%Y/%m']:
+            try:
+                # Default day to 01 for year-month formats
+                dt_obj = datetime.strptime(str(date_str), fmt)
+                return dt_obj.replace(day=1).isoformat()
+            except ValueError:
+                continue
+        
         return None
-    except:
+    except Exception: # Broad exception to catch any other parsing errors
         return None
 
 def clean_value(value: Any) -> Any:
@@ -50,9 +60,13 @@ def convert_xlsx_to_json(input_file: str, output_file: str):
                 value = clean_value(row.get(column))
                 
                 # Special handling for date fields
-                if column.lower().endswith('date'):
+                if 'date' in column.lower():
                     value = parse_date(row.get(column))
                 
+                # Ensure driverVersion is a string
+                if column == 'driverVersion' and value is not None:
+                    value = str(value)
+
                 # Store the value with the original column name
                 record[column] = value
             

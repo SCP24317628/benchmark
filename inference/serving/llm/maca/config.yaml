@@ -1,0 +1,21 @@
+model_list:
+  - model_name: deepseek-r1-llama-70b
+    litellm_params:
+      model: openai/deepseek-r1-llama-70b # add openai/ prefix to route as OpenAI provider
+      api_base: http://localhost:8000/v1/ # add api base for OpenAI compatible provider
+      api_key: openai
+  - model_name: deepseek-r1-distill-qwen-32b
+    litellm_params:
+      model: openai/deepseek-r1-distill-qwen-32b # add openai/ prefix to route as OpenAI provider
+      api_base: http://localhost:8000/v1/ # add api base for OpenAI compatible provider
+      api_key: openai
+  - model_name: qwq-32b
+    litellm_params:
+      model: openai/qwq-32b # add openai/ prefix to route as OpenAI provider
+      api_base: http://localhost:8000/v1/ # add api base for OpenAI compatible provider
+      api_key: openai
+  - model_name: llama2-7b
+    litellm_params:
+      model: openai/llama2-7b
+      api_base: http://localhost:8000/v1/ 
+      api_key: openai

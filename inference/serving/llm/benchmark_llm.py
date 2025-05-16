@@ -96,7 +96,7 @@ def parse_args():
     parser.add_argument('--config', type=str, required=True, 
                        help="Config file name (e.g., musa/config.yaml) located in the same directory")
     parser.add_argument('--model', type=str, required=True, choices=list(VLLM_SCRIPTS.keys()))
-    parser.add_argument('--device', type=str, required=True, choices=['cpu', 'cuda', 'musa'])
+    parser.add_argument('--device', type=str, required=True, choices=['cpu', 'cuda', 'musa', 'maca'])
     parser.add_argument('--input', type=str, required=True, help="Comma-separated list of input token lengths")
     parser.add_argument('--output', type=str, required=True, help="Comma-separated list of output token lengths")
     parser.add_argument('--concurrent', type=str, required=True, help="Comma-separated list of concurrent request numbers")
