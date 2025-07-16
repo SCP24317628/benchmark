@@ -32,6 +32,7 @@ VLLM_SCRIPTS = {
     'deepseek-r1-distill-qwen-14b': 'vllm_deepseek_distill_qwen_14b.sh',
     'deepseek-r1-distill-qwen-7b': 'vllm_deepseek_distill_qwen_7b.sh',
     'deepseek-r1-distill-qwen-32b': 'vllm_deepseek_distill_qwen_32b.sh',
+    'deepseek-r1-distill-qwen-1.5b': 'vllm_deepseek_distill_qwen_1.5b.sh',
 }
 PINK = '\033[95m'
 RED = '\033[91m'
