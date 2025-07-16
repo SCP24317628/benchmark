@@ -13,5 +13,5 @@ python -O -u -m vllm.entrypoints.openai.api_server \
     --tensor-parallel-size=1 \
     --gpu-memory-utilization=0.95 \
     --dtype float16 \
-    --served-model-name deepSeek-r1-distill-qwen-1.5b \
+    --served-model-name deepseek-r1-distill-qwen-1.5b \
     --device="cuda"
