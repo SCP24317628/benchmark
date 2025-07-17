@@ -6,7 +6,7 @@ DEVICE="$2"
 python benchmark_onlyvllm.py \
     --model $MODEL_NAME \
     --device $DEVICE \
-    --dry true \
+    --dry  \  #不需要部署服务加--dry
     --input 128,256 \
     --output 128 \
     --concurrent 256
