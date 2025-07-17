@@ -99,8 +99,8 @@ def parse_args():
     parser.add_argument('--input', type=str, required=True, help="Comma-separated list of input token lengths")
     parser.add_argument('--output', type=str, required=True, help="Comma-separated list of output token lengths")
     parser.add_argument('--concurrent', type=str, required=True, help="Comma-separated list of concurrent request numbers")
-    parser.add_argument('--proxy', type=bool, required=False, help="not need proxy, just run vllm")
-    parser.add_argument('--dry', type=bool, required=True, help="If the vllm and litellm are bothing running, run benchmark only")
+    parser.add_argument('--proxy', action='store_true', required=False, help="use --proxy to run benchmark with proxy")
+    parser.add_argument('--dry', action='store_true', required=False, help="use --dry to run benchmark without deploy services")
     return parser.parse_args()
 
 def parse_list_arg(arg_str: str) -> List[int]:
