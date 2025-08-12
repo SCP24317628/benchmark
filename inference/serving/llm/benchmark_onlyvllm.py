@@ -33,6 +33,26 @@ VLLM_SCRIPTS = {
     'deepseek-r1-distill-qwen-7b': 'vllm_deepseek_distill_qwen_7b.sh',
     'deepseek-r1-distill-qwen-32b': 'vllm_deepseek_distill_qwen_32b.sh',
     'deepseek-r1-distill-qwen-1.5b': 'vllm_deepseek_distill_qwen_1.5b.sh',
+    #添加模型
+    'qwen2.5-vl-7b-instruct' : 'vllm_qwen2.5_vl_7b_instruct.sh',
+    'mistral-7b'    : 'vllm_mistral_7b.sh',
+    'mistral-8x7b'  : 'vllm_mistral_8x7b.sh',
+    'phi-2'         : 'vllm_phi_2.sh',
+    'phi-3'         : 'vllm_phi_3.sh',
+    'gemma-2b'      : 'vllm_gemma_2b.sh',
+    'gemma-7b'      : 'vllm_gemma_7b.sh',
+    'qwen2-vl'      : 'vllm_qwen2_vl.sh',
+    'gpt-2'         : 'vllm_gpt_2.sh',
+    'gpt-2-xl'      : 'vllm_gpt_2_xl.sh',
+    'gpt-neox-20b'  : 'vllm_gpt_neox_20b.sh',
+    'opt-66b'       : 'vllm_opt_66b.sh',
+    'gpt-oss-20b'   : 'vllm_gpt_oss_20b.sh',
+    'gpt-oss-120b'  : 'vllm_gpt_oss_120b.sh',
+    'mixtral-8x7b'  : 'vllm_mixtral_8x7b.sh',
+    'deepseek-v2'   : 'vllm_deepseek_v2.sh',
+    'deepseek-v3'   : 'vllm_deepseek_v3.sh',
+    'e5-mistral'    : 'vllm_e5_mistral.sh',
+    'llava'         : 'vllm_llava.sh',
 }
 PINK = '\033[95m'
 RED = '\033[91m'
