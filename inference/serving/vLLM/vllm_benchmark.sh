@@ -1,8 +1,16 @@
 #!/bin/bash
 # Model configuration
-MODEL_PATH="$1"
-# MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"
+# Tokens length configuration
+INPUT_LIST=(128 256 512 1024) # can extension more
+OUTPUT_LIST=(128) # can extension more
+# Concurrency settings
+CONCURRENCY_LIST=(1 4 8 16 32 64 128) # can extension more
+# Test num prompts
+NUM_PROMPTS=256
 
+
+
+MODEL_PATH="$1"
 # Check if the model path exists
 if [ ! -d "${MODEL_PATH}" ]; then
     echo "Error: Model path does not exist - ${MODEL_PATH}"
@@ -11,15 +19,6 @@ fi
 
 # Dynamically generate the model name (in lowercase)
 MODEL_NAME=$(basename "${MODEL_PATH}" | tr '[:upper:]' '[:lower:]')
-
-# Tokens length configuration
-INPUT_LIST=(128 256 512 1024) # can extension more
-OUTPUT_LIST=(128) # can extension more
-
-# Concurrency settings
-CONCURRENCY_LIST=(1 4 8 16 32 64 128) # can extension more
-# Test num prompts
-NUM_PROMPTS=256
 
 # Output csv
 OUTPUT_DIR="output_result"

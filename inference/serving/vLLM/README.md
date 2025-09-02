@@ -1,43 +1,82 @@
-# vLLM Serve 部署及vllm_benchmark.sh脚本使用教程
+# vLLM 服务部署与性能测试
 
-# 下面将介绍如何使用 vLLM 进行模型部署的基本步骤和命令示例。
+## 1、服务部署指南
 
-vllm serve /data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b     --host 0.0.0.0     --port 8000      --tokenizer /data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b     --api-key openai     --tensor-parallel-size 1     --gpu-memory-utilization 0.95     --dtype bfloat16     --served-model-name deepseek-r1-distill-qwen-1.5b  --device cuda
-参数说明 ：
+### 部署命令
+```bash
+vllm serve /path/to/model \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --tensor-parallel-size 1 \
+    --gpu-memory-utilization 0.95 \
+    --dtype bfloat16 \
+    --served-model-name my_model
+```
+
+### 关键参数解析
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|-------|-----|
+| `--tensor-parallel-size` | int | 1 | 张量并行度，建议等于GPU数量 |
+| `--gpu-memory-utilization` | float | 0.95 | 显存利用率阈值(0.95=95%) |
+| `--dtype` | str | auto | 计算精度(auto/float16/bfloat16) |
+
+## 2、性能测试
+
+### 测试脚本
+```bash:
+bash vllm_benchmark.sh /data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b(测试模型路径)
+```
+```
+vim vllm_benchmark.sh 
+# 修改测试输入输出以及并发度（3~9行）
+
+# Tokens length configuration
+INPUT_LIST=(128 256 512 1024) # can extension more
+OUTPUT_LIST=(128) # can extension more
+# Concurrency settings
+CONCURRENCY_LIST=(1 4 8 16 32 64 128) # can extension more
+# Test num prompts
+NUM_PROMPTS=256
+```
+
+## 3、convert.sh脚本使用
+```bash
+bash convert.sh  模型名称  模型别名
+```
+example:
+```bash
+bash convert.sh  deepseek-r1-distill-qwen-1.5b  DeepSeek-R1-Distill-Qwen-1.5B
+```
+```bash
+vim convert.sh
+
+对应参数修改
+    --tp 8 \
+    --dp 1 \
+    --pp 1 \
+    --ep 1 \
+    --data-type fp16 \
+    --gpu 'H20' \
+    --gpu-num 8 \
+    --driver 'NVIDIA-Linux-x86' \
+    --driver-version '570.124.06' \
+    --backend cuda \
+    --backend-version 12.8 \
+    --engine cuda \
+    --engine-version 12.8 \
+    --serving vllm \
+    --serving-version 0.7.3 \
+    --source 'vllm'
+```
+# pipeline示意图
+```mermaid
+graph TB
+    A[部署服务]vllm_serve
+    A --> B{原始数据}  使用vllm_benchmark.sh脚本
+    B --> C[数据转换]  使用convert.sh脚本
+    C --> D((Dashboard))
+```
 
 
-   模型路径 ：首个位置参数指定模型存储路径
 
-   --host ：服务监听地址（0.0.0.0表示开放所有网络接口）
-
-   --port ：服务监听端口
-
-   --tokenizer ：分词器路径（通常与模型路径一致）
-
-   --api-key ：API访问密钥（生产环境建议使用复杂密钥）
-
-   --tensor-parallel-size ：张量并行度（需匹配GPU数量）
-
-   --gpu-memory-utilization ：显存利用率（0.95表示保留5%显存余量）
-
-#以vllm --version查看版本0.7.3为例
-vllm serve \
-  [MODEL_PATH] \
-  --host [HOST_IP] \
-  --port [PORT] \
-  --tokenizer [TOKENIZER_PATH] \
-  --api-key [API_KEY] \
-  --trust-remote-code \
-  --tensor-parallel-size [GPU_NUM] \
-  --gpu-memory-utilization [MEM_UTIL] \
-  --dtype [PRECISION] \
-  --served-model-name [MODEL_NAME] \
-  --device [DEVICE]
-
-# vllm_benchmark.sh脚本使用教程
-修改需要的测试的
-INPUT_LIST=(128 256 512 1024) 
-OUTPUT_LIST=(128) 
-CONCURRENCY_LIST=(1 4 8 16 32 64 128) 
-NUM_PROMPTS= 256
 
