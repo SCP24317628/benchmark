@@ -69,7 +69,7 @@ vim convert.sh
     --source 'vllm'
 ```
 # pipeline示意图
-```mermaid
+```
 graph TB
     A[部署服务]vllm_serve
     A --> B{原始数据}  使用vllm_benchmark.sh脚本
