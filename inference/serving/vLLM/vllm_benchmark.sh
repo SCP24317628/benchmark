@@ -16,7 +16,8 @@ if [ ! -d "${MODEL_PATH}" ]; then
     exit 1
 fi
 # Dynamically generate the model name (in lowercase)
-MODEL_NAME=$(basename "${MODEL_PATH}" | tr '[:upper:]' '[:lower:]')
+MODEL_NAME=$(basename "${MODEL_PATH%/}" | tr '[:upper:]' '[:lower:]')
+
 OUTPUT_DIR="output_result"
 mkdir -p "${OUTPUT_DIR}"
 # Modify the output file path
