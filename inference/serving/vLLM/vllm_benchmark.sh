@@ -1,54 +1,51 @@
 #!/bin/bash
-# Model configuration
-# Tokens length configuration
-INPUT_LIST=(128 256 512 1024) # can extension more
-OUTPUT_LIST=(128) # can extension more
-CONCURRENCY_LIST=(1 4 8 16 32 64 128) # Concurrency settings, can extension more
-NUM_PROMPTS=256 # Test num prompts
+MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"
+MODEL_NAME="deepseek-r1-distill-qwen-1.5b"
+# Input length and output length lists
+INPUT_LIST=(128 256 512 1024 2048 4096)
+OUTPUT_LIST=(4)  # Can be extended with different output lengths
+# Concurrency and num-prompts lists
+CONCURRENCY_LIST=(1 4 8 16 32 64 128)
+NUM_PROMPTS_LIST=(4)  # Can be extended
+
 
 
 DATASET_NAME="random"
-
-MODEL_PATH="$1"
-# Check if the model path exists
-if [ ! -d "${MODEL_PATH}" ]; then
-    echo "Error: Model path does not exist - ${MODEL_PATH}"
-    exit 1
-fi
-# Dynamically generate the model name (in lowercase)
-MODEL_NAME=$(basename "${MODEL_PATH%/}" | tr '[:upper:]' '[:lower:]')
-
-OUTPUT_DIR="output_result"
-mkdir -p "${OUTPUT_DIR}"
-# Modify the output file path
-OUTPUT_FILE="${OUTPUT_DIR}/vllm_bench_${MODEL_NAME}_results.csv"
-echo "" > "${OUTPUT_FILE}"  # Empty the file
+RESULT_DIR="vllm_results"
+BASE_DIR=output_result
+OUTPUT_FILE="vllm_bench_${MODEL_NAME}_results.csv"
+# Create output directory if it doesn't exist
+mkdir -p $BASE_DIR 2>/dev/null
+# Construct full output path
+FULL_OUTPUT_PATH="$BASE_DIR/$OUTPUT_FILE"
+echo "" > $FULL_OUTPUT_PATH  # Empty the file
 
 # CSV header
 HEADER="input_len,output_len,max_concurrency,num_prompts,Successful_requests,Benchmark_duration_s,Total_input_tokens,Total_generated_tokens,Request_throughput_req_s,Output_token_throughput_tok_s,Total_Token_throughput_tok_s,Mean_TTFT_ms,Median_TTFT_ms,P99_TTFT_ms,Mean_TPOT_ms,Median_TPOT_ms,P99_TPOT_ms,Mean_ITL_ms,Median_ITL_ms,P99_ITL_ms,Mean_E2EL_ms,Median_E2EL_ms,P99_E2EL_ms"
-echo $HEADER >> $OUTPUT_FILE
+echo $HEADER >> $FULL_OUTPUT_PATH
 
-# loops to generate all combinations
+# Four-layer loop to generate all combinations
 for W in "${INPUT_LIST[@]}"; do
     for O in "${OUTPUT_LIST[@]}"; do
         for C in "${CONCURRENCY_LIST[@]}"; do
-                echo "===== Running benchmark: input_len=$W, output_len=$O, max_concurrency=$C, num_prompts=$NUM_PROMPTS ====="
-                # Execute benchmark and capture results
+            for N in "${NUM_PROMPTS_LIST[@]}"; do
+                echo "===== Running benchmark: input_len=$W, output_len=$O, max_concurrency=$C, num_prompts=$N ====="
+
+                # Run benchmark and capture Serving Benchmark Result
                 RESULT=$(vllm bench serve \
                     --model $MODEL_PATH \
                     --served-model-name $MODEL_NAME \
                     --dataset-name $DATASET_NAME \
                     --random-input-len $W \
                     --random-output-len $O \
-                    --num-prompts $NUM_PROMPTS \
+                    --num-prompts $N \
                     --ignore-eos \
-                    --save-result \
                     --percentile-metrics 'ttft,tpot,itl,e2el' \
                     --result-dir $RESULT_DIR \
                     --max-concurrency $C \
                     2>&1 | awk '/============ Serving Benchmark Result ============/{flag=1; next} /==================================================/{flag=0} flag')
 
-                # Extract numbers values and generate CSV row
+                # Extract numeric values and generate CSV line
                 CSV_LINE=$(echo "$RESULT" | awk -F':' '
                     function clean(s){gsub(/^[ \t]+|[ \t]+$/,"",s); return s}
                     /Successful requests/ {sr=clean($2)}
@@ -72,7 +69,7 @@ for W in "${INPUT_LIST[@]}"; do
                     /P99 E2EL/ {p99e2el=clean($2)}
                     END {
                         printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                        "'$W'","'$O'","'$C'","'$NUM_PROMPTS'",
+                        "'$W'","'$O'","'$C'","'$N'",
                         sr, bd, ti, tg, rt, ot, tt,
                         mttft, medttft, p99ttft,
                         mtpot, medtpot, p99tpot,
@@ -80,16 +77,16 @@ for W in "${INPUT_LIST[@]}"; do
                         me2el, mede2el, p99e2el
                     }')
 
-                # write in CSV
-                echo "$CSV_LINE" >> $OUTPUT_FILE
+                # Write to CSV
+                echo "$CSV_LINE" >> $FULL_OUTPUT_PATH
 
-                # print log, align columns
+                # Print log with perfectly aligned columns
                 MEAN_E2EL=$(echo $CSV_LINE | cut -d',' -f21)
-                echo ">>> Completed: input_len=$W, output_len=$O, max_concurrency=$C, num_prompts=$NUM_PROMPTS, Mean_E2EL_ms=$MEAN_E2EL"
+                echo ">>> Completed: input_len=$W, output_len=$O, max_concurrency=$C, num_prompts=$N, Mean_E2EL_ms=$MEAN_E2EL"
+                echo
             done
         done
     done
 done
 
-echo "All benchmarks finished. Results saved to ${OUTPUT_FILE}"
-
+echo "All benchmarks finished. Results saved to $FULL_OUTPUT_PATH."

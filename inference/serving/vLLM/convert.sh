@@ -1,9 +1,7 @@
 #!/bin/bash
 MODEL_NAME="$1"
 MODEL_ALIAS="$2"
-
-
-python convert_vLLM_bench.py \
+python3 convert_vLLM_bench.py \
     --model $MODEL_NAME \
     --model-alias $MODEL_ALIAS \
     --tp 8 \
@@ -22,4 +20,3 @@ python convert_vLLM_bench.py \
     --serving vllm \
     --serving-version 0.7.3 \
     --source 'vllm'
-
