@@ -36,8 +36,12 @@ VLLM_SCRIPTS = {
     'deepseek-r1-distill-llama-70b': 'vllm_deepseek_distill_llama_70b.sh',
     'qwen2.5-vl-7b-instruct' : 'vllm_qwen2.5_vl_7b_instruct.sh',
     'deepseek-v3'   : 'vllm_deepseek_v3.sh',
-    'Qwen2.5-Omni-7B' : 'vllm_qwen2.5_omni_7b.sh',
-    'MiniCPM-o-2_6' : 'vllm_minicpm_o_2_6.sh',
+    'qwen2.5-omni-7B' : 'vllm_qwen2.5_omni_7b.sh',
+    'minicpm-o-2_6' : 'vllm_minicpm_o_2_6.sh',
+    'qwen2.5-7b': '',
+    'qwen2.5-14b':'',
+    'meta-llama-3-8b': '',
+
 }
 PINK = '\033[95m'
 RED = '\033[91m'
