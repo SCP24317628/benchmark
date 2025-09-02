@@ -3,12 +3,11 @@
 # Tokens length configuration
 INPUT_LIST=(128 256 512 1024) # can extension more
 OUTPUT_LIST=(128) # can extension more
-# Concurrency settings
-CONCURRENCY_LIST=(1 4 8 16 32 64 128) # can extension more
-# Test num prompts
-NUM_PROMPTS=256
+CONCURRENCY_LIST=(1 4 8 16 32 64 128) # Concurrency settings, can extension more
+NUM_PROMPTS=256 # Test num prompts
 
 
+DATASET_NAME="random"
 
 MODEL_PATH="$1"
 # Check if the model path exists
@@ -16,20 +15,14 @@ if [ ! -d "${MODEL_PATH}" ]; then
     echo "Error: Model path does not exist - ${MODEL_PATH}"
     exit 1
 fi
-
 # Dynamically generate the model name (in lowercase)
 MODEL_NAME=$(basename "${MODEL_PATH}" | tr '[:upper:]' '[:lower:]')
-
-# Output csv
 OUTPUT_DIR="output_result"
 mkdir -p "${OUTPUT_DIR}"
-
 # Modify the output file path
 OUTPUT_FILE="${OUTPUT_DIR}/vllm_bench_${MODEL_NAME}_results.csv"
-
 echo "" > "${OUTPUT_FILE}"  # Empty the file
 
-DATASET_NAME="random"
 # CSV header
 HEADER="input_len,output_len,max_concurrency,num_prompts,Successful_requests,Benchmark_duration_s,Total_input_tokens,Total_generated_tokens,Request_throughput_req_s,Output_token_throughput_tok_s,Total_Token_throughput_tok_s,Mean_TTFT_ms,Median_TTFT_ms,P99_TTFT_ms,Mean_TPOT_ms,Median_TPOT_ms,P99_TPOT_ms,Mean_ITL_ms,Median_ITL_ms,P99_ITL_ms,Mean_E2EL_ms,Median_E2EL_ms,P99_E2EL_ms"
 echo $HEADER >> $OUTPUT_FILE
