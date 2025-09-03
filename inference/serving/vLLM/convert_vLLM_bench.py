@@ -24,7 +24,7 @@ def safe_div(a, b):
     except Exception:
         return float("nan")
 
-def transform_row(row, args, src_name):
+def transform_row(row, args):
 
     out = {}
 
@@ -118,9 +118,8 @@ def parse_args():
         default=datetime.now(timezone.utc).isoformat(),
         help='Timestamp in ISO format')
     
-
-    parser.add_argument('--input', help='自动生成输入路径：output_result/vllm_bench_<model>_results.csv')
-    parser.add_argument('--output', help='自动生成输出路径：convert_output/vllm_bench_<model>_converted.csv')
+    parser.add_argument('--input', help='自动生成输入路径:output_result/vllm_bench_<model>_results.csv')
+    parser.add_argument('--output', help='自动生成输出路径:convert_output/vllm_bench_<model>_converted.csv')
 
     return parser.parse_args()
 
@@ -136,7 +135,7 @@ def main():
     if not args.output:
         output_dir = 'convert_output'
         os.makedirs(output_dir, exist_ok=True)
-        output_file = f'vllm_bench_{args.model}_converted.csv'
+        output_file = f'vllm_bench_{args.model}_gpu{args.gpu}_tp{args.tp}_converted.csv'
         args.output = os.path.join(output_dir, output_file)
 
     # Add file existence check
