@@ -1,6 +1,5 @@
 #!/bin/bash
 MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"
-MODEL_NAME="deepseek-r1-distill-qwen-1.5b"
 # Input length and output length lists
 INPUT_LIST=(128 256 512 1024 2048 4096)
 OUTPUT_LIST=(4)  # Can be extended with different output lengths
@@ -13,6 +12,7 @@ NUM_PROMPTS_LIST=(4)  # Can be extended
 DATASET_NAME="random"
 RESULT_DIR="vllm_results"
 BASE_DIR=output_result
+MODEL_NAME=$(basename "$MODEL_PATH" | tr '[:upper:]' '[:lower:]')
 OUTPUT_FILE="vllm_bench_${MODEL_NAME}_results.csv"
 # Create output directory if it doesn't exist
 mkdir -p $BASE_DIR 2>/dev/null

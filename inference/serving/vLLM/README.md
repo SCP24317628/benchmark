@@ -18,25 +18,33 @@ vllm serve /path/to/model \
 |------|------|-------|-----|
 | `--tensor-parallel-size` | int | 1 | 张量并行度，建议等于GPU数量 |
 | `--gpu-memory-utilization` | float | 0.95 | 显存利用率阈值(0.95=95%) |
-| `--dtype` | str | auto | 计算精度(auto/float16/bfloat16) |
+| `--dtype` | str | auto | 计算精度(float16/bfloat16) |
 
 ## 2、性能测试
 
 ### 测试脚本
-```bash:
-bash vllm_benchmark.sh /data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b(测试模型路径)
-```
+step1：
+
 ```
 vim vllm_benchmark.sh 
-# 修改测试输入输出以及并发度（3~9行）
 
+#修改模型路径
+MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"（需要测试的模型路径）
+MODEL_NAME="deepseek-r1-distill-qwen-1.5b"（需要测试的模型名称）
+
+
+# 修改测试输入输出以及并发度（2~9行）
 # Tokens length configuration
-INPUT_LIST=(128 256 512 1024) # can extension more
-OUTPUT_LIST=(128) # can extension more
+INPUT_LIST=(128 256 512 1024)  （输入测试长度）
+OUTPUT_LIST=(128) （输出测试长度）
 # Concurrency settings
-CONCURRENCY_LIST=(1 4 8 16 32 64 128) # can extension more
+CONCURRENCY_LIST=(1 4 8 16 32 64 128) （并发数量）
 # Test num prompts
-NUM_PROMPTS=256
+NUM_PROMPTS=256 （发送请求数量）
+```
+step2：
+```bash:
+bash vllm_benchmark.sh 
 ```
 
 ## 3、convert.sh脚本使用
@@ -48,13 +56,13 @@ example:
 bash convert.sh  deepseek-r1-distill-qwen-1.5b  DeepSeek-R1-Distill-Qwen-1.5B
 ```
 ```bash
-vim convert.sh
+vi convert.sh
 
 对应参数修改
-    --tp 8 \
-    --dp 1 \
-    --pp 1 \
-    --ep 1 \
+    --tp 8 \ （张量并行）
+    --dp 1 \ （数据并行）
+    --pp 1 \ （流水线并行）
+    --ep 1 \ （专家并行）
     --data-type fp16 \
     --gpu 'H20' \
     --gpu-num 8 \
