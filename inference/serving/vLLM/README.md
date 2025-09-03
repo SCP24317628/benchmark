@@ -26,21 +26,20 @@ vllm serve /path/to/model \
 step1：
 
 ```
-vim vllm_benchmark.sh 
+修改vllm_benchmark.sh配置
 
-#修改模型路径
-MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"（需要测试的模型路径）
-MODEL_NAME="deepseek-r1-distill-qwen-1.5b"（需要测试的模型名称）
+#修改模型路径(被测模型的路径)
+MODEL_PATH="/data/models/deepseek-ai/deepseek-r1-distill-qwen-1.5b"
 
 
 # 修改测试输入输出以及并发度（2~9行）
 # Tokens length configuration
 INPUT_LIST=(128 256 512 1024)  （输入测试长度）
-OUTPUT_LIST=(128) （输出测试长度）
+OUTPUT_LIST=(128) （输出测试长度，可拓展）
 # Concurrency settings
 CONCURRENCY_LIST=(1 4 8 16 32 64 128) （并发数量）
 # Test num prompts
-NUM_PROMPTS=256 （发送请求数量）
+NUM_PROMPTS=(256) （发送请求数量，可拓展）
 ```
 step2：
 ```bash:
