@@ -117,9 +117,9 @@ def parse_args():
     parser.add_argument('--timestamp', 
         default=datetime.now(timezone.utc).isoformat(),
         help='Timestamp in ISO format')
-    
-    parser.add_argument('--input', help='自动生成输入路径:output_result/vllm_bench_<model>_results.csv')
-    parser.add_argument('--output', help='自动生成输出路径:convert_output/vllm_bench_<model>_converted.csv')
+    # Future feature expansion
+    parser.add_argument('--input', help='output_result/vllm_bench_<model>_results.csv')
+    parser.add_argument('--output', help='convert_output/vllm_bench_<model>_converted.csv')
 
     return parser.parse_args()
 
@@ -140,12 +140,12 @@ def main():
 
     # Add file existence check
     if not os.path.exists(args.input):
-        print(f"错误：输入文件不存在 - {args.input}")
+        print(f"Error: Input file does not exist - {args.input}")
         return
     
     df = pd.read_csv(args.input)
 
-    # Check if necessary columns exist (more robust)
+    # Check if necessary columns exist 
     required_cols = ["max_concurrency", "Successful_requests", "Total_input_tokens", "Total_generated_tokens",
                      "Output_token_throughput_tok_s", "Mean_ITL_ms", "Mean_TTFT_ms", "Mean_TPOT_ms", "Mean_E2EL_ms"]
     missing = [c for c in required_cols if c not in df.columns]
@@ -157,13 +157,19 @@ def main():
 
     out_rows = []
     for _, row in df.iterrows():
-        # 在main()函数中添加空行过滤
+        # Add empty line filtering in the main() function
         if pd.notna(row['max_concurrency']) and pd.notna(row['Successful_requests']):
             out_rows.append(transform_row(row, args, src_name=os.path.basename(args.input)))
 
     out_df = pd.DataFrame(out_rows, columns=TARGET_COLS)
 
-
+    # Check if the output file already exists to avoid accidental overwriting
+    if os.path.exists(args.output):
+        print(f"Warning: Output file already exists - {args.output}")
+        response = input("Overwrite? (y/n): ").strip().lower()
+        if response != 'y':
+            print("Operation canceled")
+            return
 
     # save CSV
     out_df.to_csv(args.output, index=False)

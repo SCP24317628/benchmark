@@ -1,4 +1,5 @@
 # vLLM 服务部署与性能测试
+确保已安装好vLLM，可参考[官方安装指南](https://vllm.readthedocs.io/en/latest/getting_started/installation.html)
 
 ## 1、服务部署指南
 
@@ -17,12 +18,15 @@ vllm serve /path/to/model \
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|-------|-----|
 | `--tensor-parallel-size` | int | 1 | 张量并行度，建议等于GPU数量 |
-| `--gpu-memory-utilization` | float | 0.95 | 显存利用率阈值(0.95=95%) |
-| `--dtype` | str | auto | 计算精度(float16/bfloat16) |
+| `--gpu-memory-utilization` | float | 0.9 | 显存利用率阈值(0.9=90%) |
+| `--dtype` | str | auto | 计算精度(auto,bfloat16,float16,float32,half) |
+| `--served-model-name` | str | None | 自定义模型名称 |
+
+vllm serve --help 查看全部参数使用方法
 
 ## 2、性能测试
 
-### 测试脚本
+### 测试脚本（建议新开一个包含vllm的终端）
 step1：
 
 ```
@@ -46,15 +50,10 @@ step2：
 bash vllm_benchmark.sh 
 ```
 
-## 3、convert.sh脚本使用
-```bash
-bash convert.sh  模型名称  模型别名
+## 3、convert.sh脚本使用转成Dashboard数据格式
+
+### 脚本参数设置
 ```
-example:
-```bash
-bash convert.sh  deepseek-r1-distill-qwen-1.5b  DeepSeek-R1-Distill-Qwen-1.5B
-```
-```bash
 vi convert.sh
 
 对应参数修改
@@ -74,6 +73,18 @@ vi convert.sh
     --serving vllm \
     --serving-version 0.7.3 \
     --source 'vllm'
+```
+### 执行convert.sh
+```
+bash convert.sh  模型名称（served-model-name）  模型别名
+```
+example:
+```bash
+bash convert.sh  deepseek-r1-distill-qwen-1.5b  DeepSeek-R1-Distill-Qwen-1.5B
+```
+如报错按提示安装缺少的依赖
+```
+pip install pandas
 ```
 # pipeline示意图
 ```
