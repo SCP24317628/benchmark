@@ -19,15 +19,15 @@ CONCURRENCY_AND_PROMPTS=(
 )
 DATASET_NAME="random"
 
-
-MODEL_NAME=$(basename "$MODEL_PATH" | tr '[:upper:]' '[:lower:]')
+MODEL_NAME=$(basename "${MODEL_PATH%/}" | tr '[:upper:]' '[:lower:]')
 OUTPUT_FILE="vllm_bench_${MODEL_NAME}_results.csv"
 RESULT_DIR="/workspace/vllm_results"
-echo "" > $OUTPUT_FILE  # 清空文件
+FULL_OUTPUT_PATH="$BASE_DIR/$OUTPUT_FILE"
+echo "" > $FULL_OUTPUT_PATH  # 清空文件
 
 # 表头
 HEADER="input_len,output_len,max_concurrency,num_prompts,Successful_requests,Benchmark_duration_s,Total_input_tokens,Total_generated_tokens,Request_throughput_req_s,Output_token_throughput_tok_s,Total_Token_throughput_tok_s,Mean_TTFT_ms,Median_TTFT_ms,P99_TTFT_ms,Mean_TPOT_ms,Median_TPOT_ms,P99_TPOT_ms,Mean_ITL_ms,Median_ITL_ms,P99_ITL_ms,Mean_E2EL_ms,Median_E2EL_ms,P99_E2EL_ms"
-echo $HEADER >> $OUTPUT_FILE
+echo $HEADER >> $FULL_OUTPUT_PATH
 
 # 循环 IO_PAIRS
 for PAIR in "${IO_PAIRS[@]}"; do
@@ -84,7 +84,7 @@ for PAIR in "${IO_PAIRS[@]}"; do
             }'
         )
 
-        echo "$CSV_LINE" >> $OUTPUT_FILE
+        echo "$CSV_LINE" >> $FULL_OUTPUT_PATH
 
         MEAN_E2EL=$(echo $CSV_LINE | cut -d',' -f21)
         echo ">>> Completed: input_len=$W, output_len=$O, max_concurrency=$C, num_prompts=$N, Mean_E2EL_ms=$MEAN_E2EL"
@@ -92,5 +92,5 @@ for PAIR in "${IO_PAIRS[@]}"; do
     done
 done
 
-echo "All benchmarks finished. Results saved to $OUTPUT_FILE."
+echo "All benchmarks finished. Results saved to $FULL_OUTPUT_PATH."
 
