@@ -22,6 +22,7 @@ DATASET_NAME="random"
 MODEL_NAME=$(basename "${MODEL_PATH%/}" | tr '[:upper:]' '[:lower:]')
 OUTPUT_FILE="vllm_bench_${MODEL_NAME}_results.csv"
 RESULT_DIR="/workspace/vllm_results"
+BASE_DIR=output_result
 FULL_OUTPUT_PATH="$BASE_DIR/$OUTPUT_FILE"
 echo "" > $FULL_OUTPUT_PATH  # 清空文件
 
