@@ -11,16 +11,16 @@ vllm serve /path/to/model \
     --tensor-parallel-size 1 \
     --gpu-memory-utilization 0.95 \
     --dtype bfloat16 \
-    --served-model-name my_model
 ```
 
 ### 关键参数解析
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|-------|-----|
 | `--tensor-parallel-size` | int | 1 | 张量并行度，建议等于GPU数量 |
+| `--pipeline-parallel-size` | int | 1 | 流水线并行度|
 | `--gpu-memory-utilization` | float | 0.9 | 显存利用率阈值(0.9=90%) |
 | `--dtype` | str | auto | 计算精度(auto,bfloat16,float16,float32,half) |
-| `--served-model-name` | str | None | 自定义模型名称 |
+
 
 vllm serve --help 查看全部参数使用方法
 
