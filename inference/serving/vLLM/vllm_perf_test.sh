@@ -49,6 +49,7 @@ for PAIR in "${IO_PAIRS[@]}"; do
             --ignore-eos \
             --save-result \
             --percentile-metrics 'ttft,tpot,itl,e2el' \
+            --metric-percentiles "95,99" \
             --result-dir $RESULT_DIR \
             --max-concurrency $C \
             2>&1 | awk '/============ Serving Benchmark Result ============/{flag=1; next} /==================================================/{flag=0} flag')
